@@ -658,6 +658,10 @@ class DataFetcher:
                 logging.info(f"当前用户: {current_userid}, 开始获取用电数据...")
                 driver.get(BALANCE_URL)
                 time.sleep(self._step_wait)
+                # Balance page navigation resets user selection - re-switch to correct account
+                if not self._switch_to_user(driver, user_id, userid_index):
+                    logging.warning(f"余额页面用户切换失败, 当前户号={self._get_current_userid(driver) or '未知'}")
+                time.sleep(self._step_wait)
                 balance, last_daily_date, last_daily_usage, yearly_charge, yearly_usage, month_charge, month_usage, tou_data, enhanced_balance, step_data, last_month_period = self._get_all_data(driver, user_id, userid_index)
                 logging.info(f"用户 [{user_id}] 数据获取完成: 余额={balance}CNY, 最近日用电={last_daily_usage}kWh({last_daily_date}), "
                              f"年度用电={yearly_usage}kWh, 年度电费={yearly_charge}CNY, 月用电={month_usage}kWh, 月电费={month_charge}CNY")
